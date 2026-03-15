@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRM Research — Protein Supplement Survey</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080c18;
+  --surface: #0f1527;
+  --card: #131a2e;
+  --border: #1e2d4a;
+  --border2: #2a3d5e;
+  --blue: #4a8fff;
+  --green: #3dffa8;
+  --orange: #ffb347;
+  --pink: #ff4f8a;
+  --purple: #9b7fff;
+  --cyan: #4fd8ff;
+  --yellow: #ffe44f;
+  --text: #dde6ff;
+  --muted: #6a7ca8;
+  --faint: #3a4a6a;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+#particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+.header {
+  position: relative; z-index: 2;
+  padding: 36px 52px 28px;
+  background: linear-gradient(180deg, rgba(8,12,24,0.98) 0%, rgba(8,12,24,0.85) 100%);
+  border-bottom: 1px solid var(--border);
+}
+.header::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--blue), var(--green), transparent);
+  opacity: 0.6;
+}
+.header-row { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+.tag {
+  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: 3.5px; text-transform: uppercase; color: var(--blue);
+  margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+}
+.tag::before { content: ''; width: 20px; height: 2px; background: var(--blue); display: inline-block; }
+.header-title {
+  font-family: 'Syne', sans-serif; font-size: clamp(24px, 3.5vw, 42px);
+  font-weight: 800; line-height: 1.1; color: #fff; margin-bottom: 6px;
+}
+.header-title em { font-style: normal; color: var(--blue); }
+.header-sub { font-size: 13px; color: var(--muted); font-weight: 300; max-width: 520px; line-height: 1.6; }
+.kpi-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 24px; }
+.kpi {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 20px; min-width: 108px; transition: border-color 0.3s, transform 0.3s; cursor: default;
+}
+.kpi:hover { border-color: var(--blue); transform: translateY(-2px); }
+.kpi-val { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: #fff; line-height: 1; }
+.kpi-val sup { font-size: 14px; color: var(--blue); }
+.kpi-label { font-size: 10px; color: var(--muted); margin-top: 4px; letter-spacing: 0.5px; }
+.market-badge {
+  background: linear-gradient(135deg, rgba(74,143,255,0.12), rgba(61,255,168,0.08));
+  border: 1px solid rgba(74,143,255,0.3); border-radius: 14px; padding: 16px 22px; align-self: center;
+}
+.market-badge-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+.market-badge-val { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--green); }
+.market-badge-arrow { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* TABS NAV */
+.tabs-nav {
+  position: relative; z-index: 2; display: flex; gap: 0; padding: 0 52px;
+  background: rgba(8,12,24,0.97); border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.tab-btn {
+  position: relative; background: none; border: none; cursor: pointer;
+  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--muted); padding: 16px 22px; display: flex; align-items: center; gap: 8px;
+  white-space: nowrap; transition: color 0.25s; flex-shrink: 0;
+}
+.tab-btn .tab-icon { font-size: 15px; }
+.tab-btn::after {
+  content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px;
+  background: var(--blue); transform: scaleX(0);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.tab-btn.active { color: #fff; }
+.tab-btn.active::after { transform: scaleX(1); }
+.tab-btn:hover:not(.active) { color: var(--text); }
+.tab-btn[data-tab="segmentation"].active::after { background: var(--green); }
+.tab-btn[data-tab="awareness"].active::after { background: var(--orange); }
+.tab-btn[data-tab="activity"].active::after { background: var(--pink); }
+.tab-btn[data-tab="insights"].active::after { background: var(--purple); }
+.tab-btn[data-tab="scores"].active::after { background: var(--cyan); }
+
+/* PANELS */
+.tab-panel {
+  display: none; position: relative; z-index: 1;
+  padding: 32px 52px 60px;
+  animation: panelIn 0.4s cubic-bezier(0.22,1,0.36,1) both;
+}
+.tab-panel.active { display: block; }
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* GRID */
+.grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; max-width: 1400px; }
+.col-3 { grid-column: span 3; } .col-4 { grid-column: span 4; } .col-5 { grid-column: span 5; }
+.col-6 { grid-column: span 6; } .col-7 { grid-column: span 7; } .col-8 { grid-column: span 8; }
+.col-9 { grid-column: span 9; } .col-12 { grid-column: span 12; }
+
+/* CARD */
+.card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+  padding: 24px; position: relative; overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+.card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+.card-glow { position: absolute; top: -40px; right: -40px; width: 180px; height: 180px; border-radius: 50%; pointer-events: none; opacity: 0.07; }
+.card-title {
+  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+  margin-bottom: 22px; display: flex; align-items: center; gap: 8px;
+}
+.card-title::before { content: ''; width: 4px; height: 14px; border-radius: 2px; display: inline-block; }
+.card[data-accent="blue"] .card-title::before { background: var(--blue); }
+.card[data-accent="green"] .card-title::before { background: var(--green); }
+.card[data-accent="orange"] .card-title::before { background: var(--orange); }
+.card[data-accent="pink"] .card-title::before { background: var(--pink); }
+.card[data-accent="purple"] .card-title::before { background: var(--purple); }
+.card[data-accent="cyan"] .card-title::before { background: var(--cyan); }
+.card[data-accent="blue"] { border-top: 2px solid var(--blue); }
+.card[data-accent="green"] { border-top: 2px solid var(--green); }
+.card[data-accent="orange"] { border-top: 2px solid var(--orange); }
+.card[data-accent="pink"] { border-top: 2px solid var(--pink); }
+.card[data-accent="purple"] { border-top: 2px solid var(--purple); }
+.card[data-accent="cyan"] { border-top: 2px solid var(--cyan); }
+
+.card { animation: cardIn 0.5s ease both; }
+.card:nth-child(1){animation-delay:0.05s} .card:nth-child(2){animation-delay:0.10s}
+.card:nth-child(3){animation-delay:0.15s} .card:nth-child(4){animation-delay:0.20s}
+.card:nth-child(5){animation-delay:0.25s} .card:nth-child(6){animation-delay:0.30s}
+.card:nth-child(7){animation-delay:0.35s} .card:nth-child(8){animation-delay:0.40s}
+@keyframes cardIn { from{opacity:0;transform:translateY(18px) scale(0.98)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+/* DONUT */
+.donut-wrap { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.donut-legend { flex: 1; min-width: 120px; }
+.legend-item { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; transition: opacity 0.2s; }
+.legend-item:hover { opacity: 0.8; }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.legend-label { font-size: 12.5px; color: var(--text); flex: 1; }
+.legend-val { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; }
+
+/* BARS */
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.bar-label { font-size: 12px; color: var(--muted); width: 140px; flex-shrink: 0; text-align: right; }
+.bar-track { flex: 1; background: var(--surface); border-radius: 4px; height: 9px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; width: 0; transition: width 1.2s cubic-bezier(0.34,1,0.64,1); }
+.bar-pct { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; color: var(--text); width: 44px; }
+
+/* GROUPED BARS */
+.grouped-section { margin-bottom: 20px; }
+.grouped-label { font-size: 12.5px; color: var(--text); margin-bottom: 8px; font-weight: 500; }
+.grouped-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.grouped-tag { font-size: 10px; width: 65px; flex-shrink: 0; font-weight: 600; letter-spacing: 0.5px; }
+.grouped-track { flex: 1; height: 7px; border-radius: 4px; background: var(--surface); overflow: hidden; }
+.grouped-fill { height: 100%; border-radius: 4px; width: 0; transition: width 1.2s cubic-bezier(0.34,1,0.64,1); }
+.grouped-val { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; width: 34px; }
+
+/* GAUGE */
+.gauge-wrap { display: flex; flex-direction: column; gap: 14px; }
+.gauge-row { display: flex; align-items: center; gap: 12px; }
+.gauge-label { width: 90px; font-size: 12px; color: var(--muted); }
+.gauge-track { flex: 1; height: 20px; border-radius: 6px; background: var(--surface); overflow: hidden; }
+.gauge-fill {
+  height: 100%; border-radius: 6px; width: 0; transition: width 1.2s cubic-bezier(0.34,1,0.64,1);
+  display: flex; align-items: center; padding-left: 10px;
+  font-size: 11px; font-family: 'Syne', sans-serif; font-weight: 700; color: rgba(255,255,255,0.9);
+}
+.gauge-pct { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; width: 42px; }
+
+/* TRUST */
+.trust-grid { display: flex; flex-direction: column; gap: 10px; }
+.trust-item {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 13px 16px; transition: border-color 0.25s, transform 0.25s;
+}
+.trust-item:hover { border-color: var(--border2); transform: translateX(4px); }
+.trust-icon { font-size: 20px; width: 34px; text-align: center; flex-shrink: 0; }
+.trust-body { flex: 1; }
+.trust-name { font-size: 12.5px; color: var(--text); margin-bottom: 6px; }
+.trust-bar-bg { background: var(--card); border-radius: 3px; height: 5px; overflow: hidden; }
+.trust-bar { height: 100%; border-radius: 3px; width: 0; transition: width 1.2s cubic-bezier(0.34,1,0.64,1); }
+.trust-pct { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; min-width: 44px; text-align: right; }
+
+/* BUBBLES */
+.bubble-field { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; padding: 8px 0 4px; justify-content: center; }
+.bubble {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border-radius: 50%; font-size: 10.5px; font-family: 'Syne', sans-serif; font-weight: 700;
+  text-align: center; line-height: 1.25; color: #fff; cursor: default;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s;
+  animation: bubblePop 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.bubble:hover { transform: scale(1.12); box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+.bubble small { display: block; font-size: 9px; font-weight: 400; opacity: 0.75; margin-top: 2px; }
+@keyframes bubblePop { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+.bubble:nth-child(1){animation-delay:0.10s} .bubble:nth-child(2){animation-delay:0.15s}
+.bubble:nth-child(3){animation-delay:0.20s} .bubble:nth-child(4){animation-delay:0.25s}
+.bubble:nth-child(5){animation-delay:0.30s} .bubble:nth-child(6){animation-delay:0.35s}
+.bubble:nth-child(7){animation-delay:0.40s} .bubble:nth-child(8){animation-delay:0.45s}
+.bubble:nth-child(9){animation-delay:0.50s} .bubble:nth-child(10){animation-delay:0.55s}
+
+/* INSIGHT BOX */
+.insight-box { border-radius: 12px; padding: 14px 16px; margin-top: 14px; border: 1px solid; }
+.insight-box p { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+.insight-box p strong { color: var(--text); }
+.insight-box.blue { background: rgba(74,143,255,0.07); border-color: rgba(74,143,255,0.22); }
+.insight-box.green { background: rgba(61,255,168,0.06); border-color: rgba(61,255,168,0.2); }
+.insight-box.orange { background: rgba(255,179,71,0.07); border-color: rgba(255,179,71,0.22); }
+.insight-box.pink { background: rgba(255,79,138,0.07); border-color: rgba(255,79,138,0.22); }
+.insight-box.purple { background: rgba(155,127,255,0.07); border-color: rgba(155,127,255,0.22); }
+
+/* STAT BLOCKS */
+.stat-grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat-blk {
+  background: var(--surface); border-radius: 12px; padding: 18px;
+  border: 1px solid var(--border); transition: border-color 0.25s, transform 0.25s;
+}
+.stat-blk:hover { border-color: var(--border2); transform: translateY(-2px); }
+.stat-num { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; line-height: 1; }
+.stat-lbl { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+
+/* INSIGHT CARDS (Tab 5) */
+.insight-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  padding: 24px 26px; display: flex; gap: 18px;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.insight-card:hover { border-color: var(--border2); transform: translateX(4px); }
+.insight-card-num { font-family: 'Syne', sans-serif; font-size: 46px; font-weight: 800; line-height: 1; flex-shrink: 0; width: 54px; }
+.insight-card-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+.insight-card-text { font-size: 13px; color: var(--muted); line-height: 1.7; }
+.insight-card-tag {
+  display: inline-block; margin-top: 10px; font-size: 10px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 10px; border-radius: 20px;
+}
+
+/* PING DOT */
+.ping { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--green); position: relative; }
+.ping::after {
+  content: ''; position: absolute; inset: -4px; border-radius: 50%;
+  background: var(--green); opacity: 0.3; animation: ping 1.5s ease infinite;
+}
+@keyframes ping { 0%{transform:scale(1);opacity:0.3} 100%{transform:scale(2.2);opacity:0} }
+
+/* RADAR */
+@keyframes radarPulse { from{opacity:0.7} to{opacity:1} }
+
+/* RESPONSIVE */
+@media (max-width:1100px) {
+  .col-3,.col-4{grid-column:span 6} .col-5,.col-7,.col-8{grid-column:span 12}
+}
+@media (max-width:700px) {
+  .header{padding:22px 20px} .tab-panel{padding:18px 16px 40px} .tabs-nav{padding:0 16px}
+  .col-3,.col-4,.col-5,.col-6,.col-7,.col-8,.col-9{grid-column:span 12}
+  .header-row{flex-direction:column}
+}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-row">
+    <div>
+      <div class="tag"><span class="ping"></span> BRM Research · IIM Raipur · Group 5 · 2026</div>
+      <div class="header-title">Health Supplement<br><em>Consumer Behaviour</em> Survey</div>
+      <div class="header-sub">Decoding the gap between performance-driven and wellness-oriented consumers across India's Tier-1 &amp; Tier-2 cities</div>
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi-val"><span class="counter" data-target="80">0</span></div><div class="kpi-label">Respondents</div></div>
+        <div class="kpi"><div class="kpi-val"><span class="counter" data-target="8">0</span></div><div class="kpi-label">Questions</div></div>
+        <div class="kpi"><div class="kpi-val"><span class="counter" data-target="51">0</span><sup>%</sup></div><div class="kpi-label">Wellness</div></div>
+        <div class="kpi"><div class="kpi-val"><span class="counter" data-target="38">0</span><sup>%</sup></div><div class="kpi-label">Fitness</div></div>
+        <div class="kpi"><div class="kpi-val"><span class="counter" data-target="42">0</span><sup>%</sup></div><div class="kpi-label">High Awareness</div></div>
+      </div>
+    </div>
+    <div class="market-badge">
+      <div class="market-badge-label">India Supplement Market</div>
+      <div class="market-badge-val">₹43B → ₹94B</div>
+      <div class="market-badge-arrow">↑ 8.2% CAGR · 2024–2034</div>
+    </div>
+  </div>
+</div>
+
+<!-- TABS NAV -->
+<div class="tabs-nav">
+  <button class="tab-btn active" data-tab="demographics"><span class="tab-icon">👤</span> Demographics</button>
+  <button class="tab-btn" data-tab="segmentation"><span class="tab-icon">🎯</span> Consumer Segments</button>
+  <button class="tab-btn" data-tab="awareness"><span class="tab-icon">💡</span> Awareness &amp; Trust</button>
+  <button class="tab-btn" data-tab="activity"><span class="tab-icon">🏃</span> Physical Activity</button>
+  <button class="tab-btn" data-tab="insights"><span class="tab-icon">📊</span> Key Insights</button>
+  <button class="tab-btn" data-tab="scores"><span class="tab-icon">🧮</span> Score Analysis</button>
+</div>
+
+<!-- ══ TAB 1: DEMOGRAPHICS ══ -->
+<div class="tab-panel active" id="tab-demographics">
+  <div class="grid">
+
+    <div class="card col-4" data-accent="blue">
+      <div class="card-glow" style="background:var(--blue)"></div>
+      <div class="card-title">Gender Distribution</div>
+      <div class="donut-wrap">
+        <svg width="116" height="116" viewBox="0 0 116 116">
+          <circle cx="58" cy="58" r="42" fill="none" stroke="var(--surface)" stroke-width="20"/>
+          <circle cx="58" cy="58" r="42" fill="none" stroke="var(--blue)" stroke-width="20" stroke-dasharray="0 264" stroke-dashoffset="66" stroke-linecap="round" class="donut-seg" data-val="190.98"/>
+          <circle cx="58" cy="58" r="42" fill="none" stroke="var(--pink)" stroke-width="20" stroke-dasharray="0 264" stroke-dashoffset="-124" stroke-linecap="round" class="donut-seg" data-val="69.3"/>
+          <circle cx="58" cy="58" r="42" fill="none" stroke="var(--orange)" stroke-width="20" stroke-dasharray="0 264" stroke-dashoffset="-193" stroke-linecap="round" class="donut-seg" data-val="3.3"/>
+          <text x="58" y="54" text-anchor="middle" font-size="17" font-weight="800" fill="#fff" font-family="Syne">72.5%</text>
+          <text x="58" y="70" text-anchor="middle" font-size="9" fill="#6a7ca8" font-family="Outfit">Male</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div><span class="legend-label">Male</span><span class="legend-val" style="color:var(--blue)">58</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--pink)"></div><span class="legend-label">Female</span><span class="legend-val" style="color:var(--pink)">21</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div><span class="legend-label">Other</span><span class="legend-val" style="color:var(--orange)">1</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card col-4" data-accent="orange">
+      <div class="card-title">Age Distribution</div>
+      <div class="bar-row"><div class="bar-label">18 – 22</div><div class="bar-track"><div class="bar-fill" data-width="13.75" style="background:var(--orange)"></div></div><div class="bar-pct">13.75%</div></div>
+      <div class="bar-row"><div class="bar-label">23 – 27</div><div class="bar-track"><div class="bar-fill" data-width="78.75" style="background:var(--blue)"></div></div><div class="bar-pct">78.75%</div></div>
+      <div class="bar-row"><div class="bar-label">28 – 32</div><div class="bar-track"><div class="bar-fill" data-width="6.25" style="background:var(--green)"></div></div><div class="bar-pct">6.25%</div></div>
+      <div class="bar-row"><div class="bar-label">40+</div><div class="bar-track"><div class="bar-fill" data-width="1.25" style="background:var(--pink)"></div></div><div class="bar-pct">1.25%</div></div>
+      <div class="insight-box orange"><p><strong>78.75%</strong> are aged 23–27 — the prime early-career &amp; MBA cohort.</p></div>
+    </div>
+
+    <div class="card col-4" data-accent="green">
+      <div class="card-glow" style="background:var(--green)"></div>
+      <div class="card-title">Location Spread</div>
+      <div class="donut-wrap">
+        <svg width="116" height="116" viewBox="0 0 116 116">
+          <circle cx="58" cy="58" r="42" fill="none" stroke="var(--surface)" stroke-width="20"/>
+          <circle cx="58" cy="58" r="42" fill="none" stroke="var(--green)" stroke-width="20" stroke-dasharray="0 264" stroke-dashoffset="66" stroke-linecap="round" class="donut-seg" data-val="122.1"/>
+          <circle cx="58" cy="58" r="42" fill="none" stroke="var(--blue)" stroke-width="20" stroke-dasharray="0 264" stroke-dashoffset="-56" stroke-linecap="round" class="donut-seg" data-val="82.5"/>
+          <circle cx="58" cy="58" r="42" fill="none" stroke="var(--orange)" stroke-width="20" stroke-dasharray="0 264" stroke-dashoffset="-138" stroke-linecap="round" class="donut-seg" data-val="59.4"/>
+          <text x="58" y="54" text-anchor="middle" font-size="14" font-weight="800" fill="#fff" font-family="Syne">46.25%</text>
+          <text x="58" y="70" text-anchor="middle" font-size="9" fill="#6a7ca8" font-family="Outfit">Tier 1</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div><span class="legend-label">Tier-1 Cities</span><span class="legend-val" style="color:var(--green)">37</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div><span class="legend-label">Tier-2 Cities</span><span class="legend-val" style="color:var(--blue)">25</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div><span class="legend-label">Others</span><span class="legend-val" style="color:var(--orange)">18</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card col-6" data-accent="purple">
+      <div class="card-title">Respondent Background</div>
+      <div class="bar-row"><div class="bar-label">Full-time Professionals</div><div class="bar-track"><div class="bar-fill" data-width="42.5" style="background:var(--blue)"></div></div><div class="bar-pct">42.5%</div></div>
+      <div class="bar-row"><div class="bar-label">MBA 2025–27 Batch</div><div class="bar-track"><div class="bar-fill" data-width="38.75" style="background:var(--orange)"></div></div><div class="bar-pct">38.75%</div></div>
+      <div class="bar-row"><div class="bar-label">Masters Students</div><div class="bar-track"><div class="bar-fill" data-width="12.5" style="background:var(--green)"></div></div><div class="bar-pct">12.5%</div></div>
+      <div class="bar-row"><div class="bar-label">Undergraduates</div><div class="bar-track"><div class="bar-fill" data-width="5" style="background:var(--pink)"></div></div><div class="bar-pct">5%</div></div>
+      <div class="bar-row" style="margin-bottom:0"><div class="bar-label">PGP 2024–26</div><div class="bar-track"><div class="bar-fill" data-width="1.25" style="background:var(--purple)"></div></div><div class="bar-pct">1.25%</div></div>
+    </div>
+
+    <div class="card col-6" data-accent="cyan">
+      <div class="card-title">Gym Visit Frequency</div>
+      <div class="bar-row"><div class="bar-label">Long gym absence</div><div class="bar-track"><div class="bar-fill" data-width="25" style="background:var(--pink)"></div></div><div class="bar-pct">25%</div></div>
+      <div class="bar-row"><div class="bar-label">Weekly 3–4 times</div><div class="bar-track"><div class="bar-fill" data-width="23.75" style="background:var(--blue)"></div></div><div class="bar-pct">23.75%</div></div>
+      <div class="bar-row"><div class="bar-label">Once in a while</div><div class="bar-track"><div class="bar-fill" data-width="18.75" style="background:var(--orange)"></div></div><div class="bar-pct">18.75%</div></div>
+      <div class="bar-row"><div class="bar-label">Never</div><div class="bar-track"><div class="bar-fill" data-width="16.25" style="background:var(--purple)"></div></div><div class="bar-pct">16.25%</div></div>
+      <div class="bar-row"><div class="bar-label">Daily</div><div class="bar-track"><div class="bar-fill" data-width="8.75" style="background:var(--green)"></div></div><div class="bar-pct">8.75%</div></div>
+      <div class="bar-row" style="margin-bottom:0"><div class="bar-label">Once a week</div><div class="bar-track"><div class="bar-fill" data-width="7.5" style="background:var(--cyan)"></div></div><div class="bar-pct">7.5%</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ TAB 2: CONSUMER SEGMENTS ══ -->
+<div class="tab-panel" id="tab-segmentation">
+  <div class="grid">
+
+    <div class="card col-4" data-accent="green">
+      <div class="card-glow" style="background:var(--green)"></div>
+      <div class="card-title">Consumer Orientation</div>
+      <div class="donut-wrap">
+        <svg width="116" height="116" viewBox="0 0 116 116">
+          <circle cx="58" cy="58" r="42" fill="none" stroke="var(--surface)" stroke-width="20"/>
+          <circle cx="58" cy="58" r="42" fill="none" stroke="var(--green)" stroke-width="20" stroke-dasharray="0 264" stroke-dashoffset="66" stroke-linecap="round" class="donut-seg" data-val="135.3"/>
+          <circle cx="58" cy="58" r="42" fill="none" stroke="var(--blue)" stroke-width="20" stroke-dasharray="0 264" stroke-dashoffset="-69" stroke-linecap="round" class="donut-seg" data-val="99.0"/>
+          <circle cx="58" cy="58" r="42" fill="none" stroke="var(--orange)" stroke-width="20" stroke-dasharray="0 264" stroke-dashoffset="-168" stroke-linecap="round" class="donut-seg" data-val="29.7"/>
+          <text x="58" y="54" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" font-family="Syne">51.25%</text>
+          <text x="58" y="70" text-anchor="middle" font-size="9" fill="#6a7ca8" font-family="Outfit">Wellness</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div><span class="legend-label">Wellness-Oriented</span><span class="legend-val" style="color:var(--green)">41</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div><span class="legend-label">Fitness-Oriented</span><span class="legend-val" style="color:var(--blue)">30</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div><span class="legend-label">Neither</span><span class="legend-val" style="color:var(--orange)">9</span></div>
+        </div>
+      </div>
+      <div class="insight-box green"><p>Wellness outnumbers fitness <strong>~1.37×</strong>, yet fitness consumers drive supplement purchases far more actively.</p></div>
+    </div>
+
+    <div class="card col-8" data-accent="blue">
+      <div class="card-title">Motivation Factors — Fitness vs Wellness Consumers</div>
+      <div class="grouped-section">
+        <div class="grouped-label">💪 Muscle Gain Motivation</div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--blue)">FITNESS</span><div class="grouped-track"><div class="grouped-fill" data-width="82" style="background:var(--blue)"></div></div><span class="grouped-val" style="color:var(--blue)">82%</span></div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--green)">WELLNESS</span><div class="grouped-track"><div class="grouped-fill" data-width="25" style="background:var(--green)"></div></div><span class="grouped-val" style="color:var(--green)">25%</span></div>
+      </div>
+      <div class="grouped-section">
+        <div class="grouped-label">👨‍⚕️ Doctor Recommendation</div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--blue)">FITNESS</span><div class="grouped-track"><div class="grouped-fill" data-width="18" style="background:var(--blue)"></div></div><span class="grouped-val" style="color:var(--blue)">18%</span></div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--green)">WELLNESS</span><div class="grouped-track"><div class="grouped-fill" data-width="63" style="background:var(--green)"></div></div><span class="grouped-val" style="color:var(--green)">63%</span></div>
+      </div>
+      <div class="grouped-section">
+        <div class="grouped-label">🏷️ Brand Trust Importance</div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--blue)">FITNESS</span><div class="grouped-track"><div class="grouped-fill" data-width="54" style="background:var(--blue)"></div></div><span class="grouped-val" style="color:var(--blue)">54%</span></div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--green)">WELLNESS</span><div class="grouped-track"><div class="grouped-fill" data-width="71" style="background:var(--green)"></div></div><span class="grouped-val" style="color:var(--green)">71%</span></div>
+      </div>
+      <div class="grouped-section" style="margin-bottom:0">
+        <div class="grouped-label">💰 Price Sensitivity</div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--blue)">FITNESS</span><div class="grouped-track"><div class="grouped-fill" data-width="46" style="background:var(--blue)"></div></div><span class="grouped-val" style="color:var(--blue)">46%</span></div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--green)">WELLNESS</span><div class="grouped-track"><div class="grouped-fill" data-width="68" style="background:var(--green)"></div></div><span class="grouped-val" style="color:var(--green)">68%</span></div>
+      </div>
+    </div>
+
+    <div class="card col-12" data-accent="pink">
+      <div class="card-title">Protein Supplement Views — Bubble Map (Multi-select responses)</div>
+      <div class="bubble-field" style="padding:12px 0 8px;">
+        <div class="bubble" style="width:112px;height:112px;background:linear-gradient(135deg,#4a8fff,#2a5fbf);font-size:11px;padding:10px;">Supplements Essential<small>28 resp.</small></div>
+        <div class="bubble" style="width:96px;height:96px;background:linear-gradient(135deg,#ff4f8a,#df2a6a);font-size:10.5px;padding:9px;">Non-veg diet sufficient<small>25 resp.</small></div>
+        <div class="bubble" style="width:90px;height:90px;background:linear-gradient(135deg,#9b7fff,#7b5fdf);font-size:10.5px;padding:8px;">Don't track goals<small>23 resp.</small></div>
+        <div class="bubble" style="width:90px;height:90px;background:linear-gradient(135deg,#ffb347,#df8027);font-size:10.5px;padding:8px;">Distrust industry<small>23 resp.</small></div>
+        <div class="bubble" style="width:72px;height:72px;background:linear-gradient(135deg,#3dffa8,#1ddf88);font-size:10px;padding:7px;">Veg diet ok<small>14 resp.</small></div>
+        <div class="bubble" style="width:72px;height:72px;background:linear-gradient(135deg,#ffe44f,#dfc42f);font-size:10px;padding:7px;">Non-gym goer<small>14 resp.</small></div>
+        <div class="bubble" style="width:58px;height:58px;background:linear-gradient(135deg,#4fd8ff,#2fb8df);font-size:10px;padding:5px;">Track &amp; meet<small>9</small></div>
+        <div class="bubble" style="width:48px;height:48px;background:linear-gradient(135deg,#ff7f4f,#df5f2f);font-size:9px;padding:4px;">Don't lift heavy<small>7</small></div>
+        <div class="bubble" style="width:48px;height:48px;background:linear-gradient(135deg,#ff4f4f,#df2f2f);font-size:9px;padding:4px;">Avoid bulk<small>7</small></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ TAB 3: AWARENESS & TRUST ══ -->
+<div class="tab-panel" id="tab-awareness">
+  <div class="grid">
+
+    <div class="card col-5" data-accent="orange">
+      <div class="card-title">Supplement Awareness Level</div>
+      <div class="gauge-wrap" style="margin-top:8px;">
+        <div class="gauge-row"><div class="gauge-label">🟢 High</div><div class="gauge-track"><div class="gauge-fill" data-width="42" style="background:linear-gradient(90deg,var(--green),#2ac480);">42%</div></div><div class="gauge-pct" style="color:var(--green)">42%</div></div>
+        <div class="gauge-row"><div class="gauge-label">🟡 Moderate</div><div class="gauge-track"><div class="gauge-fill" data-width="36" style="background:linear-gradient(90deg,var(--orange),#df9327);">36%</div></div><div class="gauge-pct" style="color:var(--orange)">36%</div></div>
+        <div class="gauge-row"><div class="gauge-label">🔴 Low</div><div class="gauge-track"><div class="gauge-fill" data-width="22" style="background:linear-gradient(90deg,var(--pink),#df2a6a);">22%</div></div><div class="gauge-pct" style="color:var(--pink)">22%</div></div>
+      </div>
+      <div class="insight-box orange"><p><strong>78%</strong> have moderate-to-high awareness. The <strong>22%</strong> gap is a key education opportunity in Tier-2 markets.</p></div>
+      <div class="insight-box blue"><p>Awareness is moderate among urban consumers, but a significant portion still lacks clear understanding of product benefits.</p></div>
+    </div>
+
+    <div class="card col-4" data-accent="green">
+      <div class="card-title">Trust Sources</div>
+      <div class="trust-grid">
+        <div class="trust-item"><div class="trust-icon">🏷️</div><div class="trust-body"><div class="trust-name">Protein Products / Brand</div><div class="trust-bar-bg"><div class="trust-bar" data-width="41" style="background:var(--green)"></div></div></div><div class="trust-pct" style="color:var(--green)">41%</div></div>
+        <div class="trust-item"><div class="trust-icon">🏋️</div><div class="trust-body"><div class="trust-name">Gym Trainer Advice</div><div class="trust-bar-bg"><div class="trust-bar" data-width="29" style="background:var(--blue)"></div></div></div><div class="trust-pct" style="color:var(--blue)">29%</div></div>
+        <div class="trust-item"><div class="trust-icon">👨‍⚕️</div><div class="trust-body"><div class="trust-name">Doctor Recommendation</div><div class="trust-bar-bg"><div class="trust-bar" data-width="21" style="background:var(--orange)"></div></div></div><div class="trust-pct" style="color:var(--orange)">21%</div></div>
+        <div class="trust-item"><div class="trust-icon">🌐</div><div class="trust-body"><div class="trust-name">Online Reviews</div><div class="trust-bar-bg"><div class="trust-bar" data-width="9" style="background:var(--pink)"></div></div></div><div class="trust-pct" style="color:var(--pink)">9%</div></div>
+      </div>
+    </div>
+
+    <div class="card col-3" data-accent="purple">
+      <div class="card-title">Segment Radar</div>
+      <svg viewBox="0 0 200 210" width="100%" height="200">
+        <polygon points="100,22 172,62 172,142 100,182 28,142 28,62" fill="none" stroke="var(--border)" stroke-width="1"/>
+        <polygon points="100,46 154,74 154,130 100,158 46,130 46,74" fill="none" stroke="var(--border)" stroke-width="1"/>
+        <polygon points="100,70 136,86 136,118 100,134 64,118 64,86" fill="none" stroke="var(--border)" stroke-width="1"/>
+        <line x1="100" y1="22" x2="100" y2="182" stroke="var(--faint)" stroke-width="0.8"/>
+        <line x1="28" y1="62" x2="172" y2="142" stroke="var(--faint)" stroke-width="0.8"/>
+        <line x1="172" y1="62" x2="28" y2="142" stroke="var(--faint)" stroke-width="0.8"/>
+        <polygon points="100,22 162,66 142,142 100,162 46,130 50,74" fill="rgba(74,143,255,0.15)" stroke="var(--blue)" stroke-width="2" stroke-linejoin="round" style="animation:radarPulse 3s ease infinite alternate"/>
+        <polygon points="100,38 140,82 136,130 100,158 64,118 60,86" fill="rgba(61,255,168,0.12)" stroke="var(--green)" stroke-width="2" stroke-linejoin="round" style="animation:radarPulse 3s ease infinite alternate;animation-delay:0.5s"/>
+        <text x="100" y="16" text-anchor="middle" font-size="8" fill="var(--muted)" font-family="Outfit">Muscle</text>
+        <text x="176" y="58" font-size="8" fill="var(--muted)" font-family="Outfit">Brand</text>
+        <text x="176" y="148" font-size="8" fill="var(--muted)" font-family="Outfit">Price</text>
+        <text x="100" y="196" text-anchor="middle" font-size="8" fill="var(--muted)" font-family="Outfit">Doctor</text>
+        <text x="2" y="148" font-size="8" fill="var(--muted)" font-family="Outfit">Aware</text>
+        <text x="2" y="58" font-size="8" fill="var(--muted)" font-family="Outfit">Trust</text>
+        <rect x="16" y="190" width="8" height="3" fill="var(--blue)" rx="1"/><text x="28" y="194" font-size="7.5" fill="var(--text)" font-family="Outfit">Fitness</text>
+        <rect x="60" y="190" width="8" height="3" fill="var(--green)" rx="1"/><text x="72" y="194" font-size="7.5" fill="var(--text)" font-family="Outfit">Wellness</text>
+      </svg>
+    </div>
+
+    <div class="card col-6" data-accent="cyan">
+      <div class="card-title">India Market Context</div>
+      <div class="stat-grid-2x2">
+        <div class="stat-blk"><div class="stat-num" style="color:var(--orange)">₹43B</div><div class="stat-lbl">India supplement market (2024)</div></div>
+        <div class="stat-blk"><div class="stat-num" style="color:var(--blue)">₹94B</div><div class="stat-lbl">Projected market size by 2034</div></div>
+        <div class="stat-blk"><div class="stat-num" style="color:var(--green)">8.2%</div><div class="stat-lbl">CAGR over the next decade</div></div>
+        <div class="stat-blk"><div class="stat-num" style="color:var(--pink)">26</div><div class="stat-lbl">Supplement stores in Raipur (33% of CG)</div></div>
+      </div>
+    </div>
+
+    <div class="card col-6" data-accent="pink">
+      <div class="card-title">Research Problem Statement</div>
+      <p style="font-size:13.5px;color:var(--muted);line-height:1.8;margin-bottom:12px;">Despite rapid fitness culture growth, retailers are unable to differentiate between <strong style="color:var(--blue)">performance-driven</strong> and <strong style="color:var(--green)">wellness-oriented</strong> consumers effectively.</p>
+      <p style="font-size:13.5px;color:var(--muted);line-height:1.8;">The lack of segment-specific buying triggers, trust factors, and price sensitivity awareness leads to <strong style="color:var(--text)">ineffective marketing and suboptimal sales</strong> in Tier-2 cities.</p>
+      <div class="insight-box pink"><p>This research directly addresses the gap by mapping consumer behaviour across both segments at scale.</p></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ TAB 4: PHYSICAL ACTIVITY ══ -->
+<div class="tab-panel" id="tab-activity">
+  <div class="grid">
+
+    <div class="card col-12" data-accent="pink">
+      <div class="card-title">Popular Physical Activities (multi-select, 80 respondents)</div>
+      <div class="bubble-field" style="padding:14px 0 8px;gap:14px;">
+        <div class="bubble" style="width:124px;height:124px;background:linear-gradient(135deg,#4a8fff,#1a5fbf);font-size:13px;padding:10px;">🏸 Badminton<small>38 responses</small></div>
+        <div class="bubble" style="width:104px;height:104px;background:linear-gradient(135deg,#ffb347,#df8027);font-size:12px;padding:9px;">🏏 Cricket<small>28 responses</small></div>
+        <div class="bubble" style="width:92px;height:92px;background:linear-gradient(135deg,#ff4f8a,#bf2f6a);font-size:11px;padding:8px;">🏃 Running<small>23 resp.</small></div>
+        <div class="bubble" style="width:88px;height:88px;background:linear-gradient(135deg,#9b7fff,#7b5fdf);font-size:11px;padding:8px;">🌅 Morning Jogs<small>21 resp.</small></div>
+        <div class="bubble" style="width:82px;height:82px;background:linear-gradient(135deg,#4fd8ff,#2fb8df);font-size:11px;padding:7px;">🏊 Swimming<small>19 resp.</small></div>
+        <div class="bubble" style="width:76px;height:76px;background:linear-gradient(135deg,#ffe44f,#dfc42f);font-size:11px;padding:7px;">⚽ Football<small>18 resp.</small></div>
+        <div class="bubble" style="width:70px;height:70px;background:linear-gradient(135deg,#3dffa8,#1ddf88);font-size:11px;padding:6px;">🧘 Yoga<small>16 resp.</small></div>
+        <div class="bubble" style="width:62px;height:62px;background:linear-gradient(135deg,#ff7f4f,#df5f2f);font-size:10px;padding:5px;">🚴 Cycling<small>13 resp.</small></div>
+        <div class="bubble" style="width:50px;height:50px;background:linear-gradient(135deg,#8ef74f,#6ed72f);font-size:9px;padding:4px;">🏐 Volleyball<small>8</small></div>
+        <div class="bubble" style="width:40px;height:40px;background:linear-gradient(135deg,#ff4fff,#df2fdf);font-size:8px;padding:3px;">🎾 Squash<small>5</small></div>
+      </div>
+    </div>
+
+    <div class="card col-5" data-accent="blue">
+      <div class="card-title">Indoor vs Outdoor Activity</div>
+      <div class="bar-row" style="margin-top:8px;"><div class="bar-label">Outdoor / Team Sports</div><div class="bar-track"><div class="bar-fill" data-width="72" style="background:var(--orange)"></div></div><div class="bar-pct">~72%</div></div>
+      <div class="bar-row"><div class="bar-label">Indoor / Gym-based</div><div class="bar-track"><div class="bar-fill" data-width="28" style="background:var(--blue)"></div></div><div class="bar-pct">~28%</div></div>
+      <div class="insight-box blue"><p>Heavy skew toward outdoor sports suggests many respondents don't see themselves as traditional "gym consumers" despite fitness awareness.</p></div>
+    </div>
+
+    <div class="card col-7" data-accent="green">
+      <div class="card-title">Activity Profile by Consumer Type</div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px;">
+        <div style="background:var(--surface);border-radius:12px;padding:16px;border:1px solid var(--border);border-left:3px solid var(--blue);">
+          <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--blue);margin-bottom:6px;">💪 FITNESS-ORIENTED — 30 respondents</div>
+          <p style="font-size:12px;color:var(--muted);line-height:1.7;">Weight training, running, gym-based activities. <strong style="color:var(--text)">82% motivated by muscle gain.</strong> High supplement usage intent and willingness to pay.</p>
+        </div>
+        <div style="background:var(--surface);border-radius:12px;padding:16px;border:1px solid var(--border);border-left:3px solid var(--green);">
+          <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--green);margin-bottom:6px;">🧘 WELLNESS-ORIENTED — 41 respondents</div>
+          <p style="font-size:12px;color:var(--muted);line-height:1.7;">Yoga, jogs, recreational sports. <strong style="color:var(--text)">Doctor-driven adoption (63%).</strong> More price-sensitive and brand-conscious than fitness consumers.</p>
+        </div>
+        <div style="background:var(--surface);border-radius:12px;padding:16px;border:1px solid var(--border);border-left:3px solid var(--orange);">
+          <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--orange);margin-bottom:6px;">🤷 NEITHER — 9 respondents</div>
+          <p style="font-size:12px;color:var(--muted);line-height:1.7;">Casual / non-committed exercisers. Low gym frequency. <strong style="color:var(--text)">Supplement skepticism most pronounced</strong> in this group.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ TAB 5: KEY INSIGHTS ══ -->
+<div class="tab-panel" id="tab-insights">
+  <div class="grid">
+
+    <div class="card col-12" data-accent="purple" style="padding:28px 32px;">
+      <div class="card-title">Strategic Research Findings</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px;">
+        <div class="insight-card" style="border-color:rgba(74,143,255,0.3);border-left:4px solid var(--blue);">
+          <div class="insight-card-num" style="color:var(--blue)">01</div>
+          <div><div class="insight-card-title">Distinct Buying Triggers</div><div class="insight-card-text">Fitness consumers are triggered by <strong style="color:var(--blue)">muscle gain (82%)</strong> while wellness consumers respond to <strong style="color:var(--green)">doctor recommendations (63%)</strong>. One-size marketing fails both.</div><span class="insight-card-tag" style="background:rgba(74,143,255,0.15);color:var(--blue)">SEGMENTATION</span></div>
+        </div>
+        <div class="insight-card" style="border-color:rgba(61,255,168,0.3);border-left:4px solid var(--green);">
+          <div class="insight-card-num" style="color:var(--green)">02</div>
+          <div><div class="insight-card-title">Price Sensitivity Gap</div><div class="insight-card-text">Wellness consumers are significantly more price-sensitive <strong style="color:var(--green)">(68%)</strong> vs fitness consumers <strong style="color:var(--blue)">(46%)</strong>. Premium pricing works for fitness; value bundles win wellness.</div><span class="insight-card-tag" style="background:rgba(61,255,168,0.15);color:var(--green)">PRICING</span></div>
+        </div>
+        <div class="insight-card" style="border-color:rgba(255,179,71,0.3);border-left:4px solid var(--orange);">
+          <div class="insight-card-num" style="color:var(--orange)">03</div>
+          <div><div class="insight-card-title">Brand Over Online Reviews</div><div class="insight-card-text">Product brand trust <strong style="color:var(--orange)">(41%)</strong> crushes online reviews <strong style="color:var(--pink)">(9%)</strong>. Certification &amp; authenticity matter far more than influencer marketing.</div><span class="insight-card-tag" style="background:rgba(255,179,71,0.15);color:var(--orange)">TRUST</span></div>
+        </div>
+        <div class="insight-card" style="border-color:rgba(255,79,138,0.3);border-left:4px solid var(--pink);">
+          <div class="insight-card-num" style="color:var(--pink)">04</div>
+          <div><div class="insight-card-title">Tier-2 Concentration Opportunity</div><div class="insight-card-text">26 supplement stores in Raipur = 33% of all Chhattisgarh stores. Yet <strong style="color:var(--pink)">31.25%</strong> of respondents are Tier-2, representing an underserved, high-growth segment.</div><span class="insight-card-tag" style="background:rgba(255,79,138,0.15);color:var(--pink)">GEOGRAPHY</span></div>
+        </div>
+        <div class="insight-card" style="border-color:rgba(155,127,255,0.3);border-left:4px solid var(--purple);">
+          <div class="insight-card-num" style="color:var(--purple)">05</div>
+          <div><div class="insight-card-title">22% Awareness Gap</div><div class="insight-card-text">Despite 42% high awareness, <strong style="color:var(--purple)">22% have low awareness</strong> of supplement benefits. Education-led content marketing is a major untapped growth lever.</div><span class="insight-card-tag" style="background:rgba(155,127,255,0.15);color:var(--purple)">AWARENESS</span></div>
+        </div>
+        <div class="insight-card" style="border-color:rgba(79,216,255,0.3);border-left:4px solid var(--cyan);">
+          <div class="insight-card-num" style="color:var(--cyan)">06</div>
+          <div><div class="insight-card-title">Outdoor Sports Dominate</div><div class="insight-card-text">Badminton (38), Cricket (28) and Running (23) far outpace gym activities. Brands should invest in <strong style="color:var(--cyan)">sports sponsorship &amp; outdoor activation</strong> not just gym placements.</div><span class="insight-card-tag" style="background:rgba(79,216,255,0.15);color:var(--cyan)">ACTIVATION</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card col-12" data-accent="orange">
+      <div class="card-title">Survey Scorecard</div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;">
+        <div class="stat-blk" style="text-align:center;"><div class="stat-num" style="color:var(--blue);font-size:28px;">80</div><div class="stat-lbl">Total respondents</div></div>
+        <div class="stat-blk" style="text-align:center;"><div class="stat-num" style="color:var(--orange);font-size:28px;">72.5%</div><div class="stat-lbl">Male respondents</div></div>
+        <div class="stat-blk" style="text-align:center;"><div class="stat-num" style="color:var(--green);font-size:28px;">78.75%</div><div class="stat-lbl">Aged 23–27</div></div>
+        <div class="stat-blk" style="text-align:center;"><div class="stat-num" style="color:var(--pink);font-size:28px;">51.25%</div><div class="stat-lbl">Wellness-Oriented</div></div>
+        <div class="stat-blk" style="text-align:center;"><div class="stat-num" style="color:var(--cyan);font-size:28px;">42%</div><div class="stat-lbl">High awareness</div></div>
+        <div class="stat-blk" style="text-align:center;"><div class="stat-num" style="color:var(--yellow);font-size:28px;">41%</div><div class="stat-lbl">Trust brand directly</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ TAB 6: SCORE ANALYSIS ══ -->
+<div class="tab-panel" id="tab-scores">
+  <div class="grid">
+
+    <!-- Score Legend -->
+    <div class="card col-12" data-accent="cyan" style="padding:22px 28px;">
+      <div class="card-title">Score Framework — How Respondents Were Rated</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;">
+        <div style="text-align:center;background:var(--surface);border-radius:12px;padding:16px;border:1px solid var(--border);">
+          <div style="width:32px;height:32px;border-radius:50%;background:#ef4444;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">1</div>
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:#ef4444;margin-bottom:4px;">VERY LOW</div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5;">Unaware · Strongly avoids · Price is major barrier</div>
+        </div>
+        <div style="text-align:center;background:var(--surface);border-radius:12px;padding:16px;border:1px solid var(--border);">
+          <div style="width:32px;height:32px;border-radius:50%;background:#f97316;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">2</div>
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:#f97316;margin-bottom:4px;">LOW</div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5;">Minimal knowledge · Negative/skeptical · High price sensitivity</div>
+        </div>
+        <div style="text-align:center;background:var(--surface);border-radius:12px;padding:16px;border:1px solid var(--border);">
+          <div style="width:32px;height:32px;border-radius:50%;background:#eab308;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:#000;">3</div>
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:#eab308;margin-bottom:4px;">MODERATE</div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5;">Some awareness · Neutral attitude · Moderate sensitivity</div>
+        </div>
+        <div style="text-align:center;background:var(--surface);border-radius:12px;padding:16px;border:1px solid var(--border);">
+          <div style="width:32px;height:32px;border-radius:50%;background:#22c55e;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">4</div>
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:#22c55e;margin-bottom:4px;">HIGH</div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5;">Tracks nutrition actively · Open to supplements · Price not a concern</div>
+        </div>
+        <div style="text-align:center;background:var(--surface);border-radius:12px;padding:16px;border:1px solid var(--border);">
+          <div style="width:32px;height:32px;border-radius:50%;background:#15803d;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">5</div>
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:#4ade80;margin-bottom:4px;">VERY HIGH</div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5;">Expert-level awareness · Regular user · Willing to pay premium</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Awareness Score Distribution -->
+    <div class="card col-4" data-accent="blue">
+      <div class="card-title">Awareness Score Distribution</div>
+      <div style="margin-bottom:6px;display:flex;align-items:baseline;gap:8px;">
+        <span style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:#fff;">2.41</span>
+        <span style="font-size:12px;color:var(--muted)">avg out of 5</span>
+      </div>
+      <div class="bar-row"><div class="bar-label" style="width:110px;color:#ef4444;">1 — Very Low</div><div class="bar-track"><div class="bar-fill" data-width="40" style="background:#ef4444"></div></div><div class="bar-pct">32</div></div>
+      <div class="bar-row"><div class="bar-label" style="width:110px;color:#f97316;">2 — Low</div><div class="bar-track"><div class="bar-fill" data-width="20" style="background:#f97316"></div></div><div class="bar-pct">16</div></div>
+      <div class="bar-row"><div class="bar-label" style="width:110px;color:#eab308;">3 — Moderate</div><div class="bar-track"><div class="bar-fill" data-width="10" style="background:#eab308"></div></div><div class="bar-pct">8</div></div>
+      <div class="bar-row"><div class="bar-label" style="width:110px;color:#22c55e;">4 — High</div><div class="bar-track"><div class="bar-fill" data-width="18.75" style="background:#22c55e"></div></div><div class="bar-pct">15</div></div>
+      <div class="bar-row" style="margin-bottom:0"><div class="bar-label" style="width:110px;color:#4ade80;">5 — Very High</div><div class="bar-track"><div class="bar-fill" data-width="11.25" style="background:#15803d"></div></div><div class="bar-pct">9</div></div>
+      <div class="insight-box blue"><p><strong>60%</strong> score 1–2, signalling a broad awareness gap. Only <strong>24 of 80</strong> actively track their nutrition.</p></div>
+    </div>
+
+    <!-- Attitude Score Distribution -->
+    <div class="card col-4" data-accent="green">
+      <div class="card-title">Attitude Score Distribution</div>
+      <div style="margin-bottom:6px;display:flex;align-items:baseline;gap:8px;">
+        <span style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:#fff;">2.91</span>
+        <span style="font-size:12px;color:var(--muted)">avg out of 5</span>
+      </div>
+      <div class="bar-row"><div class="bar-label" style="width:110px;color:#ef4444;">1 — Very Neg.</div><div class="bar-track"><div class="bar-fill" data-width="17.5" style="background:#ef4444"></div></div><div class="bar-pct">14</div></div>
+      <div class="bar-row"><div class="bar-label" style="width:110px;color:#f97316;">2 — Negative</div><div class="bar-track"><div class="bar-fill" data-width="38.75" style="background:#f97316"></div></div><div class="bar-pct">31</div></div>
+      <div class="bar-row"><div class="bar-label" style="width:110px;color:#eab308;">3 — Neutral</div><div class="bar-track"><div class="bar-fill" data-width="2.5" style="background:#eab308"></div></div><div class="bar-pct">2</div></div>
+      <div class="bar-row"><div class="bar-label" style="width:110px;color:#22c55e;">4 — Positive</div><div class="bar-track"><div class="bar-fill" data-width="17.5" style="background:#22c55e"></div></div><div class="bar-pct">14</div></div>
+      <div class="bar-row" style="margin-bottom:0"><div class="bar-label" style="width:110px;color:#4ade80;">5 — Very Pos.</div><div class="bar-track"><div class="bar-fill" data-width="23.75" style="background:#15803d"></div></div><div class="bar-pct">19</div></div>
+      <div class="insight-box green"><p>A <strong>bimodal split</strong> — respondents are either strongly positive (fitness users) or clearly negative (wellness/skeptics). Very few are neutral.</p></div>
+    </div>
+
+    <!-- Price Sensitivity Distribution -->
+    <div class="card col-4" data-accent="orange">
+      <div class="card-title">Price Sensitivity Distribution</div>
+      <div style="margin-bottom:6px;display:flex;align-items:baseline;gap:8px;">
+        <span style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:#fff;">3.45</span>
+        <span style="font-size:12px;color:var(--muted)">avg out of 5</span>
+      </div>
+      <div class="bar-row"><div class="bar-label" style="width:110px;color:#22c55e;">2 — Low Sens.</div><div class="bar-track"><div class="bar-fill" data-width="36.25" style="background:#22c55e"></div></div><div class="bar-pct">29</div></div>
+      <div class="bar-row"><div class="bar-label" style="width:110px;color:#eab308;">3 — Moderate</div><div class="bar-track"><div class="bar-fill" data-width="3.75" style="background:#eab308"></div></div><div class="bar-pct">3</div></div>
+      <div class="bar-row"><div class="bar-label" style="width:110px;color:#f97316;">4 — High Sens.</div><div class="bar-track"><div class="bar-fill" data-width="38.75" style="background:#f97316"></div></div><div class="bar-pct">31</div></div>
+      <div class="bar-row" style="margin-bottom:0"><div class="bar-label" style="width:110px;color:#ef4444;">5 — Very High</div><div class="bar-track"><div class="bar-fill" data-width="21.25" style="background:#ef4444"></div></div><div class="bar-pct">17</div></div>
+      <div class="insight-box orange"><p>Another <strong>bimodal pattern</strong> — 29 respondents are price-insensitive (fitness buyers) vs 48 are highly price-sensitive (wellness/Neither).</p></div>
+    </div>
+
+    <!-- Scores by Consumer Type -->
+    <div class="card col-6" data-accent="purple">
+      <div class="card-title">Average Scores by Consumer Type</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;">
+        <div style="background:var(--surface);border-radius:10px;padding:14px;text-align:center;border-top:2px solid var(--blue);">
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--blue);margin-bottom:10px;">💪 FITNESS</div>
+          <div style="margin-bottom:6px;"><div style="font-size:10px;color:var(--muted);">Awareness</div><div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#22c55e;">3.43</div></div>
+          <div style="margin-bottom:6px;"><div style="font-size:10px;color:var(--muted);">Attitude</div><div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#4ade80;">4.20</div></div>
+          <div><div style="font-size:10px;color:var(--muted);">Price Sens.</div><div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#22c55e;">2.63</div></div>
+        </div>
+        <div style="background:var(--surface);border-radius:10px;padding:14px;text-align:center;border-top:2px solid var(--green);">
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--green);margin-bottom:10px;">🧘 WELLNESS</div>
+          <div style="margin-bottom:6px;"><div style="font-size:10px;color:var(--muted);">Awareness</div><div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#f97316;">1.88</div></div>
+          <div style="margin-bottom:6px;"><div style="font-size:10px;color:var(--muted);">Attitude</div><div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#f97316;">2.17</div></div>
+          <div><div style="font-size:10px;color:var(--muted);">Price Sens.</div><div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#ef4444;">3.95</div></div>
+        </div>
+        <div style="background:var(--surface);border-radius:10px;padding:14px;text-align:center;border-top:2px solid var(--orange);">
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--orange);margin-bottom:10px;">🤷 NEITHER</div>
+          <div style="margin-bottom:6px;"><div style="font-size:10px;color:var(--muted);">Awareness</div><div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#ef4444;">1.44</div></div>
+          <div style="margin-bottom:6px;"><div style="font-size:10px;color:var(--muted);">Attitude</div><div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#ef4444;">2.00</div></div>
+          <div><div style="font-size:10px;color:var(--muted);">Price Sens.</div><div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#f97316;">3.89</div></div>
+        </div>
+      </div>
+      <!-- Spider-style visual comparison bars -->
+      <div class="grouped-section">
+        <div class="grouped-label">📡 Awareness Score (out of 5)</div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--blue)">FITNESS</span><div class="grouped-track"><div class="grouped-fill" data-width="68.6" style="background:var(--blue)"></div></div><span class="grouped-val" style="color:var(--blue)">3.43</span></div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--green)">WELLNESS</span><div class="grouped-track"><div class="grouped-fill" data-width="37.6" style="background:var(--green)"></div></div><span class="grouped-val" style="color:var(--green)">1.88</span></div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--orange)">NEITHER</span><div class="grouped-track"><div class="grouped-fill" data-width="28.8" style="background:var(--orange)"></div></div><span class="grouped-val" style="color:var(--orange)">1.44</span></div>
+      </div>
+      <div class="grouped-section">
+        <div class="grouped-label">💬 Attitude Score (out of 5)</div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--blue)">FITNESS</span><div class="grouped-track"><div class="grouped-fill" data-width="84" style="background:var(--blue)"></div></div><span class="grouped-val" style="color:var(--blue)">4.20</span></div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--green)">WELLNESS</span><div class="grouped-track"><div class="grouped-fill" data-width="43.4" style="background:var(--green)"></div></div><span class="grouped-val" style="color:var(--green)">2.17</span></div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--orange)">NEITHER</span><div class="grouped-track"><div class="grouped-fill" data-width="40" style="background:var(--orange)"></div></div><span class="grouped-val" style="color:var(--orange)">2.00</span></div>
+      </div>
+      <div class="grouped-section" style="margin-bottom:0">
+        <div class="grouped-label">💰 Price Sensitivity (higher = more sensitive)</div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--blue)">FITNESS</span><div class="grouped-track"><div class="grouped-fill" data-width="52.6" style="background:var(--blue)"></div></div><span class="grouped-val" style="color:var(--blue)">2.63</span></div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--pink)">WELLNESS</span><div class="grouped-track"><div class="grouped-fill" data-width="79" style="background:var(--pink)"></div></div><span class="grouped-val" style="color:var(--pink)">3.95</span></div>
+        <div class="grouped-bar-row"><span class="grouped-tag" style="color:var(--orange)">NEITHER</span><div class="grouped-track"><div class="grouped-fill" data-width="77.8" style="background:var(--orange)"></div></div><span class="grouped-val" style="color:var(--orange)">3.89</span></div>
+      </div>
+    </div>
+
+    <!-- Scores by Gender & City Tier -->
+    <div class="card col-6" data-accent="pink">
+      <div class="card-title">Scores by Gender &amp; City Tier</div>
+
+      <div style="margin-bottom:20px;">
+        <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">By Gender</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="background:var(--surface);border-radius:10px;padding:14px;border-left:3px solid var(--blue);">
+            <div style="font-size:12px;font-weight:600;color:var(--blue);margin-bottom:10px;">♂ Male (59)</div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:11px;color:var(--muted);">Awareness</span><span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#22c55e;">2.69</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:11px;color:var(--muted);">Attitude</span><span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#4ade80;">3.22</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:11px;color:var(--muted);">Price Sens.</span><span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#f97316;">3.24</span></div>
+          </div>
+          <div style="background:var(--surface);border-radius:10px;padding:14px;border-left:3px solid var(--pink);">
+            <div style="font-size:12px;font-weight:600;color:var(--pink);margin-bottom:10px;">♀ Female (21)</div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:11px;color:var(--muted);">Awareness</span><span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#ef4444;">1.62</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:11px;color:var(--muted);">Attitude</span><span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#f97316;">2.05</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:11px;color:var(--muted);">Price Sens.</span><span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#ef4444;">4.05</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">By City Tier</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="background:var(--surface);border-radius:10px;padding:14px;border-left:3px solid var(--green);">
+            <div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:10px;">🏙 Tier-1 (37)</div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:11px;color:var(--muted);">Awareness</span><span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#22c55e;">2.54</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:11px;color:var(--muted);">Attitude</span><span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#22c55e;">3.08</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:11px;color:var(--muted);">Price Sens.</span><span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#f97316;">3.35</span></div>
+          </div>
+          <div style="background:var(--surface);border-radius:10px;padding:14px;border-left:3px solid var(--orange);">
+            <div style="font-size:12px;font-weight:600;color:var(--orange);margin-bottom:10px;">🏘 Tier-2 (43)</div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:11px;color:var(--muted);">Awareness</span><span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#f97316;">2.30</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:11px;color:var(--muted);">Attitude</span><span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#f97316;">2.77</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:11px;color:var(--muted);">Price Sens.</span><span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#ef4444;">3.53</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="insight-box pink"><p>Females show <strong>significantly lower awareness (1.62)</strong> and much higher price sensitivity (4.05) vs males (2.69 / 3.24). Tier-2 cities show marginally lower awareness and higher price sensitivity than Tier-1.</p></div>
+    </div>
+
+    <!-- Consumer Type × City Tier heatmap-style -->
+    <div class="card col-5" data-accent="cyan">
+      <div class="card-title">Consumer Type by City Tier</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;">
+        <div>
+          <div style="font-size:11px;color:var(--green);font-weight:600;margin-bottom:10px;text-align:center;">🏙 TIER-1 (37 resp.)</div>
+          <!-- Stacked visual bar -->
+          <div style="height:160px;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;gap:2px;">
+            <div style="flex:19;background:linear-gradient(135deg,var(--blue),#3a6fbf);display:flex;align-items:center;justify-content:center;border-radius:6px 6px 0 0;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;">Fitness<br><span style="font-size:11px;font-weight:400;">19 (51%)</span></div>
+            <div style="flex:16;background:linear-gradient(135deg,var(--green),#1ddf88);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;">Wellness<br><span style="font-size:11px;font-weight:400;">16 (43%)</span></div>
+            <div style="flex:2;background:linear-gradient(135deg,var(--orange),#df8027);display:flex;align-items:center;justify-content:center;border-radius:0 0 6px 6px;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;">Neither 2</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--orange);font-weight:600;margin-bottom:10px;text-align:center;">🏘 TIER-2 (43 resp.)</div>
+          <div style="height:160px;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;gap:2px;">
+            <div style="flex:25;background:linear-gradient(135deg,var(--green),#1ddf88);display:flex;align-items:center;justify-content:center;border-radius:6px 6px 0 0;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;">Wellness<br><span style="font-size:11px;font-weight:400;">25 (58%)</span></div>
+            <div style="flex:11;background:linear-gradient(135deg,var(--blue),#3a6fbf);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;">Fitness<br><span style="font-size:11px;font-weight:400;">11 (26%)</span></div>
+            <div style="flex:7;background:linear-gradient(135deg,var(--orange),#df8027);display:flex;align-items:center;justify-content:center;border-radius:0 0 6px 6px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;">Neither 7 (16%)</div>
+          </div>
+        </div>
+      </div>
+      <div class="insight-box blue" style="margin-top:14px;"><p>Tier-1 skews <strong>Fitness-first (51%)</strong>. Tier-2 is <strong>Wellness-dominant (58%)</strong> with 3.5× more "Neither" — a clear sign of lower supplement engagement in smaller cities.</p></div>
+    </div>
+
+    <!-- Gym Frequency Coded Chart -->
+    <div class="card col-7" data-accent="orange">
+      <div class="card-title">Gym Frequency Profile (Coded 1–6)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Distribution across all 80 respondents</div>
+          <div class="bar-row"><div class="bar-label" style="width:100px;font-size:11px;">1 · Never</div><div class="bar-track"><div class="bar-fill" data-width="16.25" style="background:#ef4444"></div></div><div class="bar-pct">13</div></div>
+          <div class="bar-row"><div class="bar-label" style="width:100px;font-size:11px;">2 · Long absence</div><div class="bar-track"><div class="bar-fill" data-width="25" style="background:#f97316"></div></div><div class="bar-pct">20</div></div>
+          <div class="bar-row"><div class="bar-label" style="width:100px;font-size:11px;">3 · Once in a while</div><div class="bar-track"><div class="bar-fill" data-width="18.75" style="background:#eab308"></div></div><div class="bar-pct">15</div></div>
+          <div class="bar-row"><div class="bar-label" style="width:100px;font-size:11px;">4 · Once a week</div><div class="bar-track"><div class="bar-fill" data-width="7.5" style="background:#4fd8ff"></div></div><div class="bar-pct">6</div></div>
+          <div class="bar-row"><div class="bar-label" style="width:100px;font-size:11px;">5 · 3-4×/week</div><div class="bar-track"><div class="bar-fill" data-width="23.75" style="background:#22c55e"></div></div><div class="bar-pct">19</div></div>
+          <div class="bar-row" style="margin-bottom:0"><div class="bar-label" style="width:100px;font-size:11px;">6 · Daily</div><div class="bar-track"><div class="bar-fill" data-width="8.75" style="background:#4ade80"></div></div><div class="bar-pct">7</div></div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Avg gym frequency by consumer type</div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="background:var(--surface);border-radius:10px;padding:14px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="font-size:12px;color:var(--blue);font-weight:600;">💪 Fitness</span>
+                <span style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--blue);">4.47<span style="font-size:11px;font-weight:400;color:var(--muted);">/6</span></span>
+              </div>
+              <div class="bar-track"><div class="bar-fill" data-width="74.5" style="background:var(--blue)"></div></div>
+            </div>
+            <div style="background:var(--surface);border-radius:10px;padding:14px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="font-size:12px;color:var(--green);font-weight:600;">🧘 Wellness</span>
+                <span style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--green);">2.61<span style="font-size:11px;font-weight:400;color:var(--muted);">/6</span></span>
+              </div>
+              <div class="bar-track"><div class="bar-fill" data-width="43.5" style="background:var(--green)"></div></div>
+            </div>
+            <div style="background:var(--surface);border-radius:10px;padding:14px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="font-size:12px;color:var(--orange);font-weight:600;">🤷 Neither</span>
+                <span style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--orange);">2.00<span style="font-size:11px;font-weight:400;color:var(--muted);">/6</span></span>
+              </div>
+              <div class="bar-track"><div class="bar-fill" data-width="33.3" style="background:var(--orange)"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attitude Score Heatmap by Type -->
+    <div class="card col-6" data-accent="green">
+      <div class="card-title">Attitude Score Breakdown by Consumer Type</div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);">
+              <th style="text-align:left;padding:8px 10px;color:var(--muted);font-weight:600;font-size:11px;">Score</th>
+              <th style="text-align:center;padding:8px 10px;color:var(--blue);font-weight:700;">💪 Fitness</th>
+              <th style="text-align:center;padding:8px 10px;color:var(--green);font-weight:700;">🧘 Wellness</th>
+              <th style="text-align:center;padding:8px 10px;color:var(--orange);font-weight:700;">🤷 Neither</th>
+              <th style="text-align:center;padding:8px 10px;color:var(--muted);font-weight:600;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:10px;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ef4444;margin-right:6px;"></span>1 — Very Neg.</td>
+              <td style="text-align:center;padding:10px;"><span style="background:rgba(74,143,255,0.1);border-radius:6px;padding:3px 10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--blue);">0</span></td>
+              <td style="text-align:center;padding:10px;"><span style="background:rgba(61,255,168,0.1);border-radius:6px;padding:3px 10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--green);">10</span></td>
+              <td style="text-align:center;padding:10px;"><span style="background:rgba(255,179,71,0.1);border-radius:6px;padding:3px 10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--orange);">4</span></td>
+              <td style="text-align:center;padding:10px;color:var(--muted);">14</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:10px;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f97316;margin-right:6px;"></span>2 — Negative</td>
+              <td style="text-align:center;padding:10px;"><span style="background:rgba(74,143,255,0.1);border-radius:6px;padding:3px 10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--blue);">5</span></td>
+              <td style="text-align:center;padding:10px;"><span style="background:rgba(61,255,168,0.2);border-radius:6px;padding:3px 10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--green);">23</span></td>
+              <td style="text-align:center;padding:10px;"><span style="background:rgba(255,179,71,0.1);border-radius:6px;padding:3px 10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--orange);">3</span></td>
+              <td style="text-align:center;padding:10px;color:var(--muted);">31</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:10px;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#eab308;margin-right:6px;"></span>3 — Neutral</td>
+              <td style="text-align:center;padding:10px;"><span style="background:rgba(74,143,255,0.1);border-radius:6px;padding:3px 10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--blue);">1</span></td>
+              <td style="text-align:center;padding:10px;"><span style="background:rgba(61,255,168,0.1);border-radius:6px;padding:3px 10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--green);">0</span></td>
+              <td style="text-align:center;padding:10px;"><span style="background:rgba(255,179,71,0.1);border-radius:6px;padding:3px 10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--orange);">1</span></td>
+              <td style="text-align:center;padding:10px;color:var(--muted);">2</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:10px;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#22c55e;margin-right:6px;"></span>4 — Positive</td>
+              <td style="text-align:center;padding:10px;"><span style="background:rgba(74,143,255,0.15);border-radius:6px;padding:3px 10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--blue);">7</span></td>
+              <td style="text-align:center;padding:10px;"><span style="background:rgba(61,255,168,0.1);border-radius:6px;padding:3px 10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--green);">7</span></td>
+              <td style="text-align:center;padding:10px;"><span style="background:rgba(255,179,71,0.1);border-radius:6px;padding:3px 10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--orange);">0</span></td>
+              <td style="text-align:center;padding:10px;color:var(--muted);">14</td>
+            </tr>
+            <tr>
+              <td style="padding:10px;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#15803d;margin-right:6px;"></span>5 — Very Pos.</td>
+              <td style="text-align:center;padding:10px;"><span style="background:rgba(74,143,255,0.25);border-radius:6px;padding:3px 10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--blue);">17</span></td>
+              <td style="text-align:center;padding:10px;"><span style="background:rgba(61,255,168,0.1);border-radius:6px;padding:3px 10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--green);">1</span></td>
+              <td style="text-align:center;padding:10px;"><span style="background:rgba(255,179,71,0.1);border-radius:6px;padding:3px 10px;font-family:'Syne',sans-serif;font-weight:700;color:var(--orange);">1</span></td>
+              <td style="text-align:center;padding:10px;color:var(--muted);">19</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="insight-box green"><p><strong>56.7%</strong> of Fitness consumers score 5 (Very Positive). <strong>80.5%</strong> of Wellness consumers score 1–2 (Negative). Clear polar opposite attitudes confirm two entirely distinct marketing strategies are needed.</p></div>
+    </div>
+
+    <!-- Awareness × Price Sensitivity scatter-style -->
+    <div class="card col-6" data-accent="blue">
+      <div class="card-title">Awareness vs Price Sensitivity — Segment Map</div>
+      <div style="position:relative;width:100%;padding-top:70%;border:1px solid var(--border);border-radius:12px;background:var(--surface);overflow:hidden;" id="scatter-wrap">
+        <!-- Axes -->
+        <div style="position:absolute;inset:0;padding:16px;">
+          <div style="position:absolute;bottom:28px;left:40px;right:10px;height:1px;background:var(--border2);"></div>
+          <div style="position:absolute;left:40px;top:10px;bottom:28px;width:1px;background:var(--border2);"></div>
+          <div style="position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:10px;color:var(--muted);">Awareness Score →</div>
+          <div style="position:absolute;left:4px;top:0;bottom:28px;display:flex;align-items:center;font-size:9px;color:var(--muted);writing-mode:vertical-rl;transform:rotate(180deg);">Price Sensitivity →</div>
+          <!-- Quadrant labels -->
+          <div style="position:absolute;top:18px;left:50%;font-size:9px;color:rgba(74,143,255,0.5);font-weight:600;">HIGH AWARE · LOW PRICE</div>
+          <div style="position:absolute;bottom:36px;left:50%;font-size:9px;color:rgba(255,79,138,0.5);font-weight:600;">LOW AWARE · LOW PRICE</div>
+          <div style="position:absolute;top:18px;left:44px;font-size:9px;color:rgba(255,179,71,0.5);font-weight:600;">HIGH AWARE · HIGH PRICE</div>
+          <div style="position:absolute;bottom:36px;left:44px;font-size:9px;color:rgba(61,255,168,0.5);font-weight:600;">LOW AWARE · HIGH PRICE</div>
+          <!-- Fitness cluster: high awareness (3.43), low price sensitivity (2.63) -->
+          <div style="position:absolute;right:14%;top:60%;transform:translate(50%,50%)">
+            <div style="width:56px;height:56px;border-radius:50%;background:rgba(74,143,255,0.25);border:2px solid var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;font-family:'Syne',sans-serif;font-weight:700;color:var(--blue);animation:bubblePop 0.8s ease both;animation-delay:0.3s;">💪<br>Fitness</div>
+          </div>
+          <!-- Wellness cluster: low awareness (1.88), high price sens (3.95) -->
+          <div style="position:absolute;left:18%;top:15%;transform:translate(-50%,-50%)">
+            <div style="width:64px;height:64px;border-radius:50%;background:rgba(61,255,168,0.2);border:2px solid var(--green);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;font-family:'Syne',sans-serif;font-weight:700;color:var(--green);animation:bubblePop 0.8s ease both;animation-delay:0.5s;">🧘<br>Wellness</div>
+          </div>
+          <!-- Neither cluster: lowest awareness (1.44), high price sens (3.89) -->
+          <div style="position:absolute;left:12%;top:20%;transform:translate(-50%,-50%)">
+            <div style="width:42px;height:42px;border-radius:50%;background:rgba(255,179,71,0.2);border:2px solid var(--orange);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:8px;font-family:'Syne',sans-serif;font-weight:700;color:var(--orange);animation:bubblePop 0.8s ease both;animation-delay:0.7s;">🤷<br>Neither</div>
+          </div>
+        </div>
+      </div>
+      <div class="insight-box blue" style="margin-top:14px;"><p>Fitness consumers occupy the <strong>High Awareness / Low Price Sensitivity</strong> quadrant — the ideal supplement buyer. Wellness & Neither cluster in <strong>Low Awareness / High Price</strong> — requiring education-first, value-focused marketing.</p></div>
+    </div>
+
+  </div>
+</div>
+
+<div style="text-align:center;padding:20px 48px 8px;color:var(--faint);font-size:11px;font-family:'Outfit',sans-serif;position:relative;z-index:2;">
+  BRM Research · IIM Raipur Group 5 · Sai Kumar · Raghukrishnan J · Nabarun · Saloni Gupta · Gokulkrishna S · Rishikesh K · Yadunandanan M
+</div>
+
+<script>
+// ── PARTICLES ──
+(function(){
+  const c = document.getElementById('particles'), ctx = c.getContext('2d');
+  let W, H;
+  const resize = () => { W = c.width = window.innerWidth; H = c.height = window.innerHeight; };
+  resize(); window.addEventListener('resize', resize);
+  const colors = ['#4a8fff','#3dffa8','#ffb347','#ff4f8a','#9b7fff'];
+  const pts = Array.from({length:55}, () => ({
+    x: Math.random()*2000, y: Math.random()*1200,
+    r: Math.random()*1.3+0.3,
+    dx: (Math.random()-.5)*.28, dy: (Math.random()-.5)*.28,
+    a: Math.random()*.45+0.08,
+    col: colors[Math.floor(Math.random()*5)]
+  }));
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p => {
+      ctx.beginPath(); ctx.arc(p.x%W, p.y%H, p.r, 0, Math.PI*2);
+      ctx.fillStyle = p.col; ctx.globalAlpha = p.a; ctx.fill();
+      p.x += p.dx; p.y += p.dy;
+      if(p.x<0)p.x=W; if(p.x>W)p.x=0; if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── TABS ──
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const panel = document.getElementById('tab-'+btn.dataset.tab);
+    panel.classList.add('active');
+    setTimeout(runAnimations, 60);
+  });
+});
+
+// ── ANIMATE ALL FILL ELEMENTS ──
+function runAnimations(){
+  document.querySelectorAll('.tab-panel.active [data-width]').forEach(el => {
+    el.style.width = el.dataset.width + '%';
+  });
+  document.querySelectorAll('.tab-panel.active .donut-seg').forEach(el => {
+    el.style.strokeDasharray = `${el.dataset.val} 264`;
+  });
+}
+
+// ── COUNTER ──
+function animateCounters(){
+  document.querySelectorAll('.counter[data-target]').forEach(el => {
+    const target = parseInt(el.dataset.target);
+    let cur = 0; const step = Math.max(1, Math.ceil(target/45));
+    const t = setInterval(() => { cur = Math.min(cur+step, target); el.textContent = cur; if(cur>=target) clearInterval(t); }, 28);
+  });
+}
+
+// ── INIT ──
+window.addEventListener('load', () => {
+  setTimeout(() => { runAnimations(); animateCounters(); }, 350);
+});
+</script>
+</body>
+</html>
